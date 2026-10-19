@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Academic Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --text-main: #0f172a; --text-muted: #475569; --border-color: #cbd5e1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+        
+        .app-header { background: #fff; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1.35rem; font-weight: 700; color: var(--primary-color); }
+        .main-nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: none; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 0.3rem; }
+        .nav-btn:hover { background-color: #f1f5f9; }
+        .nav-btn.active { background-color: #eff6ff; color: var(--primary-color); }
+
+        .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1.5rem; }
+        .tab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        
+        .calendar-container { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; }
+        .calendar-grid-header, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+        .calendar-grid-header div { font-weight: bold; padding: 0.6rem; background-color: #f1f5f9; font-size: 0.9rem; }
+        .calendar-day { min-height: 100px; border: 1px solid #f1f5f9; padding: 0.3rem; text-align: left; font-size: 0.85rem; background: #fff; }
+        .calendar-day.today { background-color: #eff6ff; border-color: var(--primary-color); }
+        .calendar-event { background-color: var(--primary-color); color: #fff; font-size: 0.7rem; padding: 3px 5px; border-radius: 3px; margin-top: 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; }
+        .btn { padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: #fff; display: inline-flex; gap: 0.3rem; align-items: center; }
+        .btn:hover { background: #f1f5f9; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo"><i class="fa-solid fa-graduation-cap"></i> StudyFlow</div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-btn"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="assignments.html" class="nav-btn"><i class="fa-solid fa-list-check"></i> Assignments</a>
+                <a href="calendar.html" class="nav-btn active"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+                <a href="groups.html" class="nav-btn"><i class="fa-solid fa-users"></i> Study Groups</a>
+                <a href="notifications.html" class="nav-btn"><i class="fa-solid fa-bell"></i> Notifications</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="tab-header">
+            <div>
+                <h2>Academic Deadline Calendar</h2>
+                <p style="font-size:0.9rem; color:var(--text-muted)">Identify periods where you have multiple overlapping deadlines[cite: 3].</p>
+            </div>
+            <div>
+                <button class="btn" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+                <span id="month-title" style="font-weight:bold; margin: 0 1rem; font-size: 1.05rem;"></span>
+                <button class="btn" onclick="changeMonth(1)">Next <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-grid-header">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
+    </main>
+
+    <script>
+        let currentDate = new Date();
+        let assignments = JSON.parse(localStorage.getItem('studyflow_assignments')) || [];
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            document.getElementById('month-title').innerText = `${monthNames[month]} ${year}`;
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for(let i=0; i<firstDay; i++) {
+                grid.innerHTML += `<div class="calendar-day" style="background:#f8fafc"></div>`;
+            }
+
+            for(let day=1; day<=daysInMonth; day++) {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const isToday = dateStr === todayStr ? 'today' : '';
+                
+                let eventsHtml = '';
+                assignments.filter(a => a.dueDate === dateStr).forEach(a => {
+                    eventsHtml += `<div class="calendar-event" title="${a.title} (${a.module})">${a.title}</div>`;
+                });
+
+                grid.innerHTML += `
+                    <div class="calendar-day ${isToday}">
+                        <div style="font-weight:bold">${day}</div>
+                        ${eventsHtml}
+                    </div>`;
+            }
+        }
+
+        function changeMonth(dir) {
+            currentDate.setMonth(currentDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCalendar);
+    </script>
+</body>
+</html>

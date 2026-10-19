@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Notifications & Reminders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --text-main: #0f172a; --text-muted: #475569; --border-color: #cbd5e1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+        
+        .app-header { background: #fff; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1.35rem; font-weight: 700; color: var(--primary-color); }
+        .main-nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: none; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 0.3rem; }
+        .nav-btn:hover { background-color: #f1f5f9; }
+        .nav-btn.active { background-color: #eff6ff; color: var(--primary-color); }
+
+        .container { max-width: 900px; margin: 1.5rem auto; padding: 0 1.5rem; }
+        .card { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
+        .notification-list { list-style: none; }
+        .notification-item { padding: 1rem 0; border-bottom: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start; }
+        .notification-item:last-child { border-bottom: none; }
+        .notification-icon { font-size: 1.2rem; margin-top: 0.1rem; }
+        .notification-icon.info { color: var(--primary-color); }
+        .notification-icon.success { color: #16a34a; }
+        .notification-content h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+        .notification-content p { font-size: 0.85rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo"><i class="fa-solid fa-graduation-cap"></i> StudyFlow</div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-btn"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="assignments.html" class="nav-btn"><i class="fa-solid fa-list-check"></i> Assignments</a>
+                <a href="calendar.html" class="nav-btn"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+                <a href="groups.html" class="nav-btn"><i class="fa-solid fa-users"></i> Study Groups</a>
+                <a href="notifications.html" class="nav-btn active"><i class="fa-solid fa-bell"></i> Notifications</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="margin-bottom: 1.5rem;">
+            <h2>System Reminders & Conversational Feedback</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted)">Designed to reduce the possibility of forgetting important academic deadlines[cite: 4].</p>
+        </div>
+
+        <div class="card">
+            <ul class="notification-list">
+                <li class="notification-item">
+                    <div class="notification-icon info"><i class="fa-solid fa-circle-info"></i></div>
+                    <div class="notification-content">
+                        <h4>Upcoming Assignment Deadline</h4>
+                        <p>Reminder: Your HCIN6222 assignment is due in 2 days. Would you like to review your remaining subtasks[cite: 3, 10]?</p>
+                        <small style="color:var(--text-muted)">2 hours ago</small>
+                    </div>
+                </li>
+                <li class="notification-item">
+                    <div class="notification-icon success"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="notification-content">
+                        <h4>Positive Emotional Feedback</h4>
+                        <p>Great job! You completed 3 tasks today. Keep up the momentum[cite: 11]!</p>
+                        <small style="color:var(--text-muted)">Yesterday</small>
+                    </div>
+                </li>
+                <li class="notification-item">
+                    <div class="notification-icon info"><i class="fa-solid fa-users"></i></div>
+                    <div class="notification-content">
+                        <h4>Study Group Milestone</h4>
+                        <p>Your study group has completed 80% of this week's collaborative tasks[cite: 10].</p>
+                        <small style="color:var(--text-muted)">3 days ago</small>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

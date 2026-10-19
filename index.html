@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #2563eb; --primary-hover: #1d4ed8; --bg-color: #f8fafc; --text-main: #0f172a; --text-muted: #475569; --border-color: #cbd5e1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+        
+        .app-header { background: #fff; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1.35rem; font-weight: 700; color: var(--primary-color); }
+        .main-nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: none; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 0.3rem; }
+        .nav-btn:hover { background-color: #f1f5f9; }
+        .nav-btn.active { background-color: #eff6ff; color: var(--primary-color); }
+
+        .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1.5rem; }
+        .dashboard-welcome { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem; }
+        .dashboard-welcome h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .motivational-text { font-size: 1.05rem; opacity: 0.9; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .metric-card { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.2rem; display: flex; align-items: center; gap: 1rem; }
+        .metric-icon { width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+        .metric-icon.blue { background-color: #dbeafe; color: #1e40af; }
+        .metric-icon.orange { background-color: #ffedd5; color: #c2410c; }
+        .metric-icon.green { background-color: #dcfce7; color: #15803d; }
+        .metric-icon.purple { background-color: #f3e8ff; color: #6b21a8; }
+        .metric-info { display: flex; flex-direction: column; }
+        .metric-label { font-size: 0.85rem; color: var(--text-muted); }
+        .metric-value { font-size: 1.5rem; font-weight: 700; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        @media(max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        .card { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .badge { padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-high { background-color: #fee2e2; color: #991b1b; }
+        .badge-medium { background-color: #fef3c7; color: #92400e; }
+        .assignment-preview { border-left: 4px solid var(--primary-color); background: #f8fafc; padding: 1rem; border-radius: 4px; margin-bottom: 0.75rem; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo"><i class="fa-solid fa-graduation-cap"></i> StudyFlow</div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-btn active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="assignments.html" class="nav-btn"><i class="fa-solid fa-list-check"></i> Assignments</a>
+                <a href="calendar.html" class="nav-btn"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+                <a href="groups.html" class="nav-btn"><i class="fa-solid fa-users"></i> Study Groups</a>
+                <a href="notifications.html" class="nav-btn"><i class="fa-solid fa-bell"></i> Notifications</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="dashboard-welcome">
+            <h2>Welcome back, Student!</h2>
+            <p id="motivational-quote" class="motivational-text">Organize your academic deadlines and break complex assignments into manageable tasks[cite: 1].</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon blue"><i class="fa-solid fa-book-open"></i></div>
+                <div class="metric-info"><span class="metric-label">Total Assignments</span><span class="metric-value" id="metric-total">0</span></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon orange"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="metric-info"><span class="metric-label">Due Soon (3 Days)</span><span class="metric-value" id="metric-due-soon">0</span></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon green"><i class="fa-solid fa-check-double"></i></div>
+                <div class="metric-info"><span class="metric-label">Completed Tasks</span><span class="metric-value" id="metric-completed-tasks">0</span></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon purple"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="metric-info"><span class="metric-label">Overall Progress</span><span class="metric-value" id="metric-overall-progress">0%</span></div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-list-check"></i> Immediate Priorities & Visibility</h3>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">The dashboard provides an overview of your academic workload without forcing you to search through multiple pages[cite: 3].</p>
+                <div id="dashboard-priorities-list"></div>
+            </div>
+            <div>
+                <div class="card">
+                    <div class="card-header"><h3><i class="fa-solid fa-circle-info"></i> HCI Design Focus</h3></div>
+                    <ul style="font-size: 0.85rem; color: var(--text-muted); padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <li><strong>Learnability:</strong> Familiar icons, clear labels, and predictable navigation[cite: 5].</li>
+                        <li><strong>Error Prevention:</strong> Prompts before destructive actions and clear input guidelines[cite: 5, 8].</li>
+                        <li><strong>WCAG 2.0 AA:</strong> High text contrast and dual-indicator priorities (text + color)[cite: 13, 14].</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const defaultAssignments = [
+            { id: "assign-1", title: "HCIN6222 Part 1 POE", module: "HCIN6222", dueDate: new Date(Date.now() + 172800000).toISOString().split('T')[0], priority: "HIGH", subtasks: [{ id: "st-1", title: "Research requirements", completed: true }, { id: "st-2", title: "Write report", completed: false }] }
+        ];
+        let assignments = JSON.parse(localStorage.getItem('studyflow_assignments')) || defaultAssignments;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let total = assignments.length, dueSoon = 0, completedTasks = 0, totalTasks = 0;
+            const today = new Date().toISOString().split('T')[0];
+            const container = document.getElementById('dashboard-priorities-list');
+            container.innerHTML = '';
+
+            assignments.forEach(a => {
+                if(a.dueDate >= today) dueSoon++;
+                a.subtasks.forEach(st => { totalTasks++; if(st.completed) completedTasks++; });
+
+                container.innerHTML += `
+                    <div class="assignment-preview">
+                        <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:0.2rem;">
+                            <span>${a.title} (${a.module})</span>
+                            <span class="badge badge-${a.priority.toLowerCase()}">${a.priority} PRIORITY</span>
+                        </div>
+                        <small style="color:var(--text-muted)"><i class="fa-solid fa-calendar-days"></i> Due Date: ${a.dueDate} | Subtasks: ${a.subtasks.filter(s=>s.completed).length}/${a.subtasks.length} completed</small>
+                    </div>`;
+            });
+
+            document.getElementById('metric-total').innerText = total;
+            document.getElementById('metric-due-soon').innerText = dueSoon;
+            document.getElementById('metric-completed-tasks').innerText = completedTasks;
+            document.getElementById('metric-overall-progress').innerText = totalTasks ? `${Math.round((completedTasks/totalTasks)*100)}%` : '0%';
+            document.getElementById('motivational-quote').innerText = totalTasks - completedTasks === 0 ? 
+                "Great job! All current academic tasks are fully completed." : 
+                `You have ${totalTasks - completedTasks} remaining tasks today. Let's get them done[cite: 12]!`;
+        });
+    </script>
+</body>
+</html>

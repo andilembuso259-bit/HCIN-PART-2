@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Assignments & Task Breakdown</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #2563eb; --primary-hover: #1d4ed8; --bg-color: #f8fafc; --text-main: #0f172a; --text-muted: #475569; --border-color: #cbd5e1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+        
+        .app-header { background: #fff; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1.35rem; font-weight: 700; color: var(--primary-color); }
+        .main-nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .nav-btn { background: transparent; border: none; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 0.3rem; }
+        .nav-btn:hover { background-color: #f1f5f9; }
+        .nav-btn.active { background-color: #eff6ff; color: var(--primary-color); }
+
+        .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1.5rem; }
+        .tab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .btn { padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; background: var(--primary-color); color: #fff; display: inline-flex; gap: 0.4rem; align-items: center; }
+        .btn:hover { background: var(--primary-hover); }
+        
+        .controls-card { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 250px; }
+        .search-box input, select { width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; }
+
+        .assignment-card { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+        .subtasks-list { list-style: none; margin-top: 0.8rem; border-top: 1px dashed var(--border-color); padding-top: 0.8rem; }
+        .subtask-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; font-size: 0.95rem; }
+        .subtask-item.completed span { text-decoration: line-through; color: var(--text-muted); }
+
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .hidden { display: none !important; }
+        .modal-card { background: #fff; width: 100%; max-width: 550px; border-radius: 8px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.3rem; }
+        input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; }
+        .badge { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .badge-high { background-color: #fee2e2; color: #991b1b; }
+        .badge-medium { background-color: #fef3c7; color: #92400e; }
+        .badge-low { background-color: #e0e7ff; color: #3730a3; }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo"><i class="fa-solid fa-graduation-cap"></i> StudyFlow</div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-btn"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="assignments.html" class="nav-btn active"><i class="fa-solid fa-list-check"></i> Assignments</a>
+                <a href="calendar.html" class="nav-btn"><i class="fa-solid fa-calendar-days"></i> Calendar</a>
+                <a href="groups.html" class="nav-btn"><i class="fa-solid fa-users"></i> Study Groups</a>
+                <a href="notifications.html" class="nav-btn"><i class="fa-solid fa-bell"></i> Notifications</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="tab-header">
+            <div>
+                <h2>Assignments & Task Decomposition</h2>
+                <p style="font-size:0.9rem; color:var(--text-muted)">Divide large assignments into structured subtasks to monitor academic progress[cite: 2].</p>
+            </div>
+            <button class="btn" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add Assignment</button>
+        </div>
+
+        <div class="controls-card">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search by assignment title or module..." oninput="renderAssignments()">
+            </div>
+            <select id="filter-priority" onchange="renderAssignments()" style="max-width: 200px;">
+                <option value="ALL">All Priorities</option>
+                <option value="HIGH">High Priority</option>
+                <option value="MEDIUM">Medium Priority</option>
+                <option value="LOW">Low Priority</option>
+            </select>
+        </div>
+
+        <div id="assignments-container"></div>
+    </main>
+
+    <!-- Modal Form -->
+    <div id="modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3>Create Academic Assignment</h3>
+                <button onclick="closeModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleCreate(event)">
+                <div class="form-group"><label>Assignment Name <span style="color:red">*</span></label><input type="text" id="new-title" placeholder="e.g., HCIN6222 Part 1" required></div>
+                <div class="form-group"><label>Subject / Module <span style="color:red">*</span></label><input type="text" id="new-module" placeholder="e.g., HCIN6222" required></div>
+                <div class="form-group"><label>Due Date <span style="color:red">*</span></label><input type="date" id="new-date" required></div>
+                <div class="form-group"><label>Priority Level</label>
+                    <select id="new-priority"><option value="HIGH">High Priority</option><option value="MEDIUM" selected>Medium Priority</option><option value="LOW">Low Priority</option></select>
+                </div>
+                <div class="form-group"><label>Description / Notes</label><textarea id="new-desc" rows="2" placeholder="Brief outline of requirements..."></textarea></div>
+                <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1rem;">
+                    <button type="button" class="btn" style="background:#e2e8f0; color:#334155;" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Save Assignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let assignments = JSON.parse(localStorage.getItem('studyflow_assignments')) || [
+            {
+                id: "assign-1", title: "HCIN6222 Part 1 POE", module: "HCIN6222", dueDate: new Date(Date.now() + 172800000).toISOString().split('T')[0], priority: "HIGH", description: "Design requirements and usability principles.",
+                subtasks: [{ id: "st-1", title: "Research design requirements", completed: true }, { id: "st-2", title: "Complete usability goals", completed: false }, { id: "st-3", title: "Write WCAG section", completed: false }]
+            }
+        ];
+
+        function renderAssignments() {
+            const container = document.getElementById('assignments-container');
+            container.innerHTML = '';
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const priority = document.getElementById('filter-priority').value;
+
+            const filtered = assignments.filter(a => 
+                (a.title.toLowerCase().includes(search) || a.module.toLowerCase().includes(search)) &&
+                (priority === 'ALL' || a.priority === priority)
+            );
+
+            if(filtered.length === 0) {
+                container.innerHTML = '<div class="assignment-card"><p>No assignments found matching your filter criteria.</p></div>';
+                return;
+            }
+
+            filtered.forEach(a => {
+                const completedCount = a.subtasks.filter(s => s.completed).length;
+                const progressPct = a.subtasks.length ? Math.round((completedCount / a.subtasks.length) * 100) : 0;
+
+                container.innerHTML += `
+                    <div class="assignment-card">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem;">
+                            <div>
+                                <h3 style="font-size:1.1rem;">${a.title}</h3>
+                                <span style="font-size:0.85rem; color:var(--text-muted)">Module: <strong>${a.module}</strong> | Due: ${a.dueDate}</span>
+                            </div>
+                            <span class="badge badge-${a.priority.toLowerCase()}">${a.priority}</span>
+                        </div>
+                        <p style="font-size:0.9rem; color:var(--text-muted); margin:0.5rem 0;">${a.description || ''}</p>
+                        <div style="font-size:0.8rem; font-weight:600; display:flex; justify-content:space-between; margin-top:0.5rem;">
+                            <span>Progress (${completedCount}/${a.subtasks.length} tasks)</span>
+                            <span>${progressPct}%</span>
+                        </div>
+                        <div style="width:100%; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden; margin-top:0.2rem;">
+                            <div style="width:${progressPct}%; height:100%; background:var(--primary-color);"></div>
+                        </div>
+                        <ul class="subtasks-list">
+                            ${a.subtasks.map(st => `
+                                <li class="subtask-item ${st.completed ? 'completed' : ''}">
+                                    <input type="checkbox" ${st.completed ? 'checked' : ''} onclick="toggleSubtask('${a.id}', '${st.id}')">
+                                    <span>${st.title}</span>
+                                </li>`).join('')}
+                        </ul>
+                    </div>`;
+            });
+        }
+
+        function toggleSubtask(aId, stId) {
+            const a = assignments.find(x => x.id === aId);
+            if(a) {
+                const st = a.subtasks.find(s => s.id === stId);
+                if(st) { st.completed = !st.completed; localStorage.setItem('studyflow_assignments', JSON.stringify(assignments)); renderAssignments(); }
+            }
+        }
+
+        function openModal() { document.getElementById('modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+        
+        function handleCreate(e) {
+            e.preventDefault();
+            assignments.push({
+                id: 'assign-' + Date.now(),
+                title: document.getElementById('new-title').value,
+                module: document.getElementById('new-module').value,
+                dueDate: document.getElementById('new-date').value,
+                priority: document.getElementById('new-priority').value,
+                description: document.getElementById('new-desc').value,
+                subtasks: [
+                    { id: 'st-1', title: 'Research topic requirements', completed: false },
+                    { id: 'st-2', title: 'Draft primary sections', completed: false },
+                    { id: 'st-3', title: 'Review and submit assignment', completed: false }
+                ]
+            });
+            localStorage.setItem('studyflow_assignments', JSON.stringify(assignments));
+            closeModal();
+            renderAssignments();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderAssignments);
+    </script>
+</body>
+</html>
